@@ -1,8 +1,8 @@
-# 鲁凯宁任务交付核对
+# 功能实现与验收核对
 
-## 七项任务对应成果
+## 功能模块与实现
 
-| 图片任务 | 工程成果 | 验收依据 |
+| 功能模块 | 工程成果 | 验收依据 |
 | --- | --- | --- |
 | 环境搭建 | requirements.txt、requirements-lock.txt、pyproject.toml、macOS/Linux/Windows 安装脚本 | Python 3.12.14 环境实际运行；锁定依赖安装成功 |
 | 测试数据准备 | sample_data.csv、generate_sample_data.py、dataset_converters.py、examples/ | 288 条可复现模拟数据；ASSISTments/EdNet 人工夹具转换与端到端推理 |
@@ -20,8 +20,8 @@
 - 可替换真实模型的统一接口：`ModelAdapter.predict()`、`PredictModel` 协议、外部模型工厂入口。
 - 基础功能测试与运行说明：`tests/`、`README.md`、`docs/TEST_REPORT.md`。
 - 真实数据处理接口：ASSISTments 和 EdNet KT1 转换器及人工夹具，不包含未提供的真实数据。
-- 刘静涵的评估交接格式：含 y_true/y_pred、稳定 record_id、时间、模型类型的 predictions.csv。
+- 评估接口格式：含 y_true/y_pred、稳定 record_id、时间、模型类型的 predictions.csv。
 
 ## 交付边界
 
-负责人 A 的测试框架范围已实现并完成当前环境验收。真实 DKT/AKT 权重、遗忘模型验证、负责人 B 的评估模块、LLM 路径生成、知识图谱数据库和鸿蒙端部署不在本次任务图片为负责人 A 指定的成果中，也没有相应输入资产。接入真实模型时按 MODEL_INTERFACE.md 提供训练产物即可继续使用本框架。
+测试框架已实现并完成当前环境验收。本仓库包含数据预处理、模型推理接口、模拟模型、预测结果导出和自动测试。真实 DKT/AKT 权重、遗忘机制评估、指标与图表分析、LLM 路径生成、知识图谱数据库和鸿蒙端部署属于后续集成范围。接入真实模型时按 MODEL_INTERFACE.md 提供训练产物即可使用本框架。

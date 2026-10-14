@@ -1,6 +1,6 @@
-# 鲁凯宁知识追踪测试框架
+# 知识追踪测试框架
 
-交付版本 **1.0.0**，日期 **2026 年 10 月 13 日**。本工程完成任务图片中负责人 A 的七项工作：Python 环境、模拟数据、预处理、Mock 模型、统一模型接口、主程序和基础功能测试。当前未收到训练组的真实模型或真实数据文件，默认运行使用明确标记的合成数据与模拟预测。
+版本 **1.0.0**，日期 **2026 年 10 月 13 日**。本工程提供 Python 环境、模拟数据、数据预处理、Mock 模型、统一模型接口、主程序和自动测试。默认运行使用明确标记的合成数据与模拟预测，真实模型通过插件接口接入。
 
 README 更新于 **2026 年 10 月 14 日**。
 
@@ -8,11 +8,11 @@ README 更新于 **2026 年 10 月 14 日**。
 
 整体大创项目是“基于知识图谱与认知诊断的个性化学习路径动态生成系统”，面向鸿蒙设备，结合知识图谱、知识追踪、遗忘机制和大语言模型生成学习计划。
 
-本仓库实现鲁凯宁负责的 **Python 知识追踪测试框架**：读取学生答题记录，组织可见的历史作答，调用模拟模型或训练组提供的真实模型，再导出统一格式的预测 CSV，供后续评估模块使用。
+本仓库实现 **Python 知识追踪测试框架**：读取学生答题记录，组织可见的历史作答，调用模拟模型或外部真实模型，再导出统一格式的预测 CSV，供后续评估模块使用。
 
 ## 已完成的工作
 
-| 分工任务 | 已实现内容 | 对应文件 |
+| 功能模块 | 已实现内容 | 对应文件 |
 | --- | --- | --- |
 | 1. 环境搭建 | Python 3.12 环境、pandas / NumPy / pytest 依赖、锁定版本与安装脚本 | `requirements*.txt`、`pyproject.toml`、`scripts/setup.sh`、`scripts/setup.bat` |
 | 2. 测试数据准备 | 固定随机种子的合成数据、多知识点题目、缺失可选耗时；ASSISTments 与 EdNet KT1 转换 | `sample_data.csv`、`generate_sample_data.py`、`dataset_converters.py`、`examples/` |
@@ -58,14 +58,14 @@ knowledge_tracing_test/
 ├── docs/
 │   ├── RESEARCH.md                 # 项目理解、开发调研与原始来源
 │   ├── DATA_FORMAT.md              # 输入输出字段、时间与缺失值规则
-│   ├── MODEL_INTERFACE.md          # 训练组模型接入与评估交接契约
+│   ├── MODEL_INTERFACE.md          # 模型接入与评估接口契约
 │   ├── TEST_REPORT.md              # 实际验收结果和复现方法
-│   └── DELIVERY_CHECKLIST.md        # 七项任务成果核对
+│   └── DELIVERY_CHECKLIST.md        # 实现内容与验收核对
 ├── evidence/                       # 模拟运行、转换器、异常及一万条记录验收证据
 └── qa/                             # 测试日志、JUnit、覆盖率和发布包检查记录
 ```
 
-运行后生成的 `outputs/`、本机 `.venv/`、Python 缓存及系统文件不纳入版本控制。`evidence/` 中提交的数据为合成数据或人工夹具，不含真实学生记录。项目申报表及任务原图保留在原工作目录，不属于此源码仓库。
+运行后生成的 `outputs/`、本机 `.venv/`、Python 缓存及系统文件不纳入版本控制。`evidence/` 中提交的数据为合成数据或人工夹具，不含真实学生记录。
 
 ## 数据处理流程
 
@@ -129,7 +129,7 @@ python main.py --overwrite
 
 | 文件 | 用途 |
 | --- | --- |
-| `predictions.csv` | 统一预测结果，交给刘静涵的评估程序 |
+| `predictions.csv` | 统一预测结果，供评估程序读取 |
 | `skill_mapping.json` | 本次知识点编号，0 预留给未知知识点 |
 | `rejected_rows.csv` | 拒收记录和原因，无拒收时保留表头 |
 | `run_summary.json` | 模型类型、数据统计、配置、依赖版本、耗时与文件 SHA256 |
@@ -183,7 +183,7 @@ python main.py --input data/ednet.csv --output-dir outputs/ednet
 
 转换器会关联正确答案和标签，识别原始毫秒时间，并隔离同一 `solving_id` 题组。建议先选取学生子集；该版本在内存中处理输入，未验证 EdNet 全量规模。`examples/` 中的两个数据集样例都是人工构造的测试夹具。
 
-训练组实现 `create_model(config)`，返回含 `name`、`is_mock` 和 `predict(requests)` 的对象。接入时必须使用训练组的固定词表：
+外部模型实现 `create_model(config)`，返回含 `name`、`is_mock` 和 `predict(requests)` 的对象。接入时必须使用与模型权重匹配的固定词表：
 
 ```bash
 python main.py --model plugin --factory my_training_module:create_model \
@@ -205,9 +205,9 @@ python main.py --model plugin --factory examples.constant_plugin:create_model \
 
 - `docs/RESEARCH.md`：项目理解、数据集与因果预测调研、选型依据和原始来源。
 - `docs/DATA_FORMAT.md`：输入/输出字段、缺失值、时间和词表规则。
-- `docs/MODEL_INTERFACE.md`：训练组接入契约及刘静涵的评估对接方式。
+- `docs/MODEL_INTERFACE.md`：模型接入契约及评估对接方式。
 - `docs/TEST_REPORT.md`：实际验收结果、复现命令、覆盖范围和未验证事项。
-- `docs/DELIVERY_CHECKLIST.md`：任务图片中七项任务对应成果和验收证据。
+- `docs/DELIVERY_CHECKLIST.md`：实现内容、对应文件和验收证据。
 - `evidence/`：本次实际运行生成的数据转换、预测结果与验收记录。
 - `qa/`：pytest 日志、JUnit XML、覆盖率 JSON、静态检查日志。
 - `requirements-lock.txt`：本次验证的精确依赖版本；`requirements.txt` 提供允许的版本范围。

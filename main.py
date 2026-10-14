@@ -17,7 +17,7 @@ ROOT = Path(__file__).resolve().parent
 
 
 def parser() -> argparse.ArgumentParser:
-    result = argparse.ArgumentParser(description="鲁凯宁知识追踪测试框架：CSV → 因果历史 → 模型 → 预测 CSV")
+    result = argparse.ArgumentParser(description="知识追踪测试框架：CSV → 因果历史 → 模型 → 预测 CSV")
     result.add_argument("--version", action="version", version=VERSION)
     result.add_argument("--input", type=Path, default=ROOT / "sample_data.csv")
     result.add_argument("--output-dir", type=Path, default=ROOT / "outputs" / "demo")
@@ -26,7 +26,7 @@ def parser() -> argparse.ArgumentParser:
     result.add_argument("--threshold", type=float, default=0.5)
     result.add_argument("--invalid-policy", choices=["error", "drop"], default="error")
     result.add_argument("--timestamp-unit", choices=["iso", "s", "ms"], default="iso")
-    result.add_argument("--vocab", type=Path, help="训练组提供的固定知识点词表")
+    result.add_argument("--vocab", type=Path, help="与模型权重匹配的固定知识点词表")
     result.add_argument("--unknown-skill-policy", choices=["error", "unk"], default="error")
     result.add_argument("--model", choices=["mock", "plugin"], default="mock")
     result.add_argument("--factory", help="外部模型工厂 module:function")
@@ -41,7 +41,7 @@ def main(argv: list[str] | None = None) -> int:
         vocabulary = SkillVocabulary.load(args.vocab) if args.vocab else None
         if args.model == "plugin":
             if not args.factory or vocabulary is None:
-                raise ModelValidationError("plugin 模式必须提供 --factory 和训练组 --vocab")
+                raise ModelValidationError("plugin 模式必须提供 --factory 和固定词表 --vocab")
             config = json.loads(args.model_config.read_text(encoding="utf-8")) if args.model_config else {}
             if not isinstance(config, dict):
                 raise ModelValidationError("模型配置必须为 JSON 对象")

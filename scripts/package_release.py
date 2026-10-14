@@ -19,7 +19,7 @@ def main():
     parser.add_argument("--destination", type=Path, default=ROOT.parent / "交付版本")
     args = parser.parse_args()
     args.destination.mkdir(parents=True, exist_ok=True)
-    output = args.destination / f"鲁凯宁_知识追踪测试框架_v{VERSION}.zip"
+    output = args.destination / f"知识追踪测试框架_v{VERSION}.zip"
     excluded = {".venv", "__pycache__", ".pytest_cache", ".ruff_cache", "outputs", ".git", "dist"}
     files = sorted(path for path in ROOT.rglob("*") if path.is_file()
                    and not excluded.intersection(path.relative_to(ROOT).parts)
